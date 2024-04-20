@@ -1,33 +1,11 @@
-import React ,{ useState, useEffect } from "react";
-import { View, Text } from "react-native";
+import React, { useState, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-// 定义每个页面的内容
-function HomeScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>首页</Text>
-    </View>
-  );
-}
-
-function FeaturesScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>功能</Text>
-    </View>
-  );
-}
-
-function PersonalHomeScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>个人主页</Text>
-    </View>
-  );
-}
+import HomeScreen from "./HomeScreen";
+import FeaturesScreen from "./FeaturesScreen";
+import PersonalHomeScreen from "./PersonalHomeScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -46,6 +24,10 @@ export default function App() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" color={color} size={size} />
           ),
+          headerTitleAlign: "center", // 设置标题居中
+          headerTitleStyle: {
+            fontWeight: "bold", // 设置标题字体为粗体
+          },
         }}
       />
       <Tab.Screen
@@ -56,6 +38,10 @@ export default function App() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="square" color={color} size={size} />
           ),
+          headerTitleAlign: "center", // 设置标题居中
+          headerTitleStyle: {
+            fontWeight: "bold", // 设置标题字体为粗体
+          },
         }}
       />
       <Tab.Screen
@@ -66,6 +52,10 @@ export default function App() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" color={color} size={size} />
           ),
+          headerTitleAlign: "center", // 设置标题居中
+          headerTitleStyle: {
+            fontWeight: "bold", // 设置标题字体为粗体
+          },
         }}
       />
     </Tab.Navigator>

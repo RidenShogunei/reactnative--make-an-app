@@ -1,8 +1,9 @@
 // Login.jsx
 import React, { useState, useEffect } from "react";
-import { View, TextInput, Button, StyleSheet,Text } from "react-native";
+import { View, TextInput, Button, StyleSheet, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import api from "../api/login";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -10,7 +11,13 @@ const Login = () => {
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, []);
-
+  const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem("@storage_Key", value);
+    } catch (e) {
+      console.log(err)
+    }
+  };
   const handleLogin = async () => {
     try {
       const result = await api.login(username, password);
@@ -18,6 +25,7 @@ const Login = () => {
       if (result.data && result.data !== "fail") {
         alert("登录成功！");
         navigation.navigate("main");
+        storeData(result.data)
         // 在这里存储用户信息
       } else {
         alert("登录失败，用户名或密码错误");
@@ -70,7 +78,7 @@ const styles = StyleSheet.create({
     textAlign: "center", // 文本居中
     fontStyle: "italic", // 文本斜体
     fontSize: 48, // 文本大小设为24
-    marginBottom:10
+    marginBottom: 10,
   },
 });
 export default Login;
