@@ -110,7 +110,7 @@ function HomeScreen() {
       <View style={styles.card2}>
         {data ? (
           <>
-            <Text style={styles.title}>内存使用情况:</Text>
+            <Text style={styles.title}>服务器存储使用情况:</Text>
             <BarChart
               data={chartData}
               width={Dimensions.get("window").width - 16}
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     marginBottom: "2%",
   },
   title: {
-    fontSize: 30,
+    fontSize: 40,
     fontWeight: "bold",
     marginTop: 10,
   },
