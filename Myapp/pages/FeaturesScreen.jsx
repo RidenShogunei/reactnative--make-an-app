@@ -4,7 +4,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import RandomRiddles from "./function/riddle"; 
 import English from "./function/english"
 import Chicken from "./function/chicken"
-import { useNavigation } from "@react-navigation/native";
+import Histoy from "./function/history"
+import Tran from "./function/translate"
 const Stack = createStackNavigator();
 function FeaturesScreen({ navigation }) {
   useEffect(() => {
@@ -16,7 +17,7 @@ function FeaturesScreen({ navigation }) {
     { id: 3, name: "视频管理" },
     { id: 4, name: "每日鸡汤" },
     { id: 5, name: "英汉语录" },
-    { id: 6, name: "动画识图" },
+    { id: 6, name: "历史今日" },
     { id: 7, name: "在线翻译" },
     { id: 8, name: "随机谜语" },
     // 在这里你可以添加更多的功能
@@ -38,6 +39,12 @@ function FeaturesScreen({ navigation }) {
             else if(item.name==="每日鸡汤"){
               navigation.navigate("Chicken");
             }
+            else if(item.name==="历史今日"){
+              navigation.navigate("Histoy");
+            }
+            else if(item.name==="在线翻译"){
+              navigation.navigate("Tran");
+            }
           }}
         >
           <Text style={styles.text}>{item.name}</Text>
@@ -53,6 +60,8 @@ export default function FeaturesStack() {
       <Stack.Screen name="RandomRiddles" component={RandomRiddles} />
       <Stack.Screen name="English" component={English} />
       <Stack.Screen name="Chicken" component={Chicken} />
+      <Stack.Screen name="Histoy" component={Histoy} />
+      <Stack.Screen name="Tran" component={Tran} />
     </Stack.Navigator>
   );
 }

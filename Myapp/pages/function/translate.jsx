@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+} from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
-async function fetchData(setData, setLoading) {
+
+async function fetchData(setData, setLoading, userInput) {
   setLoading(true);
-  const response = await axios.get("https://api.oick.cn/api/yhyl");
-  setData(response.data.data);
+  const response = await axios.get(
+    `https://api.oick.cn/api/fanyi?text=${userInput}`
+  );
+  setData(response.data);
   setLoading(false);
 }
 
@@ -13,50 +23,58 @@ export default function RiddleScreen() {
   const navigation = useNavigation();
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: "英汉语录", // 设置头标题
+      headerTitle: "在线翻译",
     });
   }, []);
+
+  const [userInput, setUserInput] = useState(""); // 用户输入
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-
-  // 使用 useEffect 来在组件挂载后进行数据获取
-  useEffect(() => {
-    fetchData(setData, setLoading);
-  }, []);
-
-  // 渲染页面
   return (
-    <View style={styles.container}>
-      {loading && <Text style={styles.loadingText}>加载中...</Text>}
-      {data && !loading && (
-        <View style={styles.box}>
-          <Text style={styles.artisticText}>英文：{data.content}</Text>
-          <Text style={styles.artisticText}>译文：{data.note}</Text>
-          <View style={styles.click}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                fetchData(setData, setLoading);
-                setRevealAnswer(false);
-              }}
-              disabled={loading}
-            >
-              <Text style={styles.buttonText}>获取新语录</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-    </View>
+    <ScrollView style={styles.container}>
+      <View style={styles.box}>
+        <TextInput
+          style={styles.input}
+          placeholder="在此输入中文"
+          multiline
+          numberOfLines={10}
+          value={userInput}
+          onChangeText={(text) => setUserInput(text)}
+        />
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => fetchData(setData, setLoading, userInput)}
+          disabled={loading || userInput.trim() === ""}
+        >
+          <Text style={styles.buttonText}>翻译</Text>
+        </TouchableOpacity>
+        {loading ? (
+          <Text style={styles.loadingText}>加载中...</Text>
+        ) : (
+          data && (
+            <Text style={styles.artisticText}>翻译结果：{data.data.result}</Text>
+          )
+        )}
+      </View>
+    </ScrollView>
   );
 }
 
+// Styles..
 const styles = StyleSheet.create({
+  input: {
+    height: 50,
+    width:'100%',
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 5,
+    paddingRight: 5,
+  },
   container: {
     flex: 1,
     backgroundColor: "#F5FCFF",
-    justifyContent: "center",
-    alignItems: "center", 
     borderWidth: 2,
     borderColor: "#ddd",
   },

@@ -4,29 +4,74 @@ import {
   Text,
   Modal,
   StyleSheet,
-  Button,
   TouchableOpacity,
+  Dimensions,
+  Button,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { BarChart, PieChart } from "react-native-chart-kit";
+import api from "../api/getdata"; // 你的API地址
+import AsyncStorage from "@react-native-async-storage/async-storage";
+function getCurrentDate() {
+  // 创建一个日期对象，添加 8 小时以获取到中国时区 (CST) 的时间
+  let date = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  // 将日期格式化为 YYYY-MM-DD
+  return date.toISOString().split("T")[0];
+}
 
 function HomeScreen() {
+  const [data, setData] = useState(null); // Set initial state as an empty array
+  const [visitTimes, setVisitTimes] = useState(1);
+
   const navigation = useNavigation();
   const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const value = await AsyncStorage.getItem("@storage_Key");
+        if (value === null) throw new Error("UserId not found in Storage");
+        const { data, error } = await api.getanalysis(value);
+        if (error) throw new Error(`Error getting analysis data: ${error}`);
+        setData(data);
+
+        // 获取并更新访问次数
+        let times = await AsyncStorage.getItem("visitTimes");
+        if (times) {
+          let newTimes = Number(times) + 1;
+          setVisitTimes(newTimes);
+          AsyncStorage.setItem("visitTimes", String(newTimes));
+        }
+      } catch (error) {
+        console.log("Error during data fetching and processing:", error);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     const getDataAndVerify = async () => {
       const value = await AsyncStorage.getItem("@looked_key");
 
-      if (value == "false") {
+      if (value === "false") {
         setShow(false);
       }
     };
-
     getDataAndVerify();
   }, [navigation]);
 
+  let labels = ["totalSizeKB", "fileSizeKB", "videoSizeKB", "audioSizeKB"];
+  let dataValues = data
+    ? [data.totalSizeKB, data.fileSizeKB, data.videoSizeKB, data.audioSizeKB]
+    : [0, 0, 0, 0];
+  let chartData = {
+    labels: labels,
+    datasets: [
+      {
+        data: dataValues,
+      },
+    ],
+  };
   const storeData = async (value) => {
     setShow(false);
     try {
@@ -35,10 +80,8 @@ function HomeScreen() {
       console.log(e);
     }
   };
-
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      {/* 使用Modal组件创建卡片样式的提示框 */}
+    <View style={styles.container}>
       <Modal visible={show} transparent={true} animationType="slide">
         <View style={styles.modalView}>
           <Text>你好,欢迎来到本软件,需要说明的有以下几点:</Text>
@@ -58,11 +101,46 @@ function HomeScreen() {
       <TouchableOpacity style={styles.helpIcon} onPress={() => setShow(true)}>
         <Icon name="question-circle" size={30} color="#000" />
       </TouchableOpacity>
+      <View style={styles.card}>
+        <View style={styles.header}>
+          <Text style={styles.largeText}>当前日期: {getCurrentDate()}</Text>
+          <Text style={styles.largeText}>使用次数: {visitTimes}</Text>
+        </View>
+      </View>
+      <View style={styles.card2}>
+        {data ? (
+          <>
+            <Text style={styles.title}>内存使用情况:</Text>
+            <BarChart
+              data={chartData}
+              width={Dimensions.get("window").width - 16}
+              height={220}
+              fromZero
+              chartConfig={{
+                backgroundColor: "#e26a00",
+                backgroundGradientFrom: "#fb8c00",
+                backgroundGradientTo: "#ffa726",
+                decimalPlaces: 2,
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: { borderRadius: 16 },
+              }}
+              style={{ marginVertical: 8, borderRadius: 16 }}
+            />
+          </>
+        ) : (
+          <Text style={styles.largeText}>暂无数据</Text>
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   modalView: {
     margin: 20,
     backgroundColor: "white",
@@ -83,8 +161,45 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
   },
-  buttonContainer: {
-    alignSelf: "center",
+  header: {
+    marginTop: 10,
+  },
+  largeText: {
+    fontSize: 40,
+    fontWeight: "bold",
+    marginBottom: "2%",
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
+    marginTop: 10,
+  },
+  card: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+    padding: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    marginVertical: 10,
+    marginTop: "20%",
+    width: "100%",
+  },
+  card2: {
+    justifyContent: "space-between",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+    padding: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    marginVertical: 10,
+    width: "100%",
   },
 });
 

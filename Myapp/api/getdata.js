@@ -5,7 +5,8 @@ const getanalysis = async (uid) => {
         const response = await axios.get(
             `https://chenjinxu.top:6002/getanalysis/${uid}`
         );
-        return response.data;
+        console.log( `https://chenjinxu.top:6002/getanalysis/${uid}`)
+        return response;
     } catch (error) {
         console.error("Error during API Call", error);
         return { error: error.message };
