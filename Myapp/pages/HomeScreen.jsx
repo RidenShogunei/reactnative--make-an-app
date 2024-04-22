@@ -6,7 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
-  Button,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -84,17 +83,27 @@ function HomeScreen() {
     <View style={styles.container}>
       <Modal visible={show} transparent={true} animationType="slide">
         <View style={styles.modalView}>
-          <Text>你好,欢迎来到本软件,需要说明的有以下几点:</Text>
-          <Text>1.本软件的文件系统是和本人的网站联动的,同时账号系统也是</Text>
-          <Text>2.本人的网站地址是:https://chenjinxu.top</Text>
-          <Text>3.本提示只会在您第一次打开本软件时自动展示</Text>
+          <Text style={{ fontSize: 20 }}>
+            你好,欢迎来到本软件,需要说明的有以下几点:
+          </Text>
+          <Text style={{ fontSize: 20 }}>
+            1.本软件的文件系统是和本人的网站五系统联动的,同时账号系统也是
+          </Text>
+          <Text style={{ fontSize: 20 }}>
+            2.本人的网站地址是:https://chenjinxu.top
+          </Text>
+          <Text style={{ fontSize: 20 }}>
+            3.本提示只会在您第一次打开本软件时自动展示
+          </Text>
           <View style={styles.buttonContainer}>
-            <Button
-              title="我已看过"
+            <TouchableOpacity
+              style={styles.buttonStyle}
               onPress={() => {
                 storeData("false");
               }}
-            />
+            >
+              <Text style={styles.buttonTextStyle}>我已看过</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -136,6 +145,24 @@ function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  buttonStyle: {
+    backgroundColor: "#87CEFA", 
+    padding: 10, 
+    borderRadius: 5, 
+    justifyContent: "center",  // 使文字垂直居中
+    alignItems: "center", // 使文字水平居中
+  },
+  buttonTextStyle: {
+    color: "white", // 文字颜色
+    fontSize: 20, // 文字大小
+    fontWeight: "bold",
+  },
+  buttonContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    width:'100%',
+    marginTop:"4%"
+  },
   container: {
     flex: 1,
     justifyContent: "space-between",
